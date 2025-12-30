@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     email: EmailStr
-    user_id: int
+    id: int
     created_at: datetime
 
     class Config:
