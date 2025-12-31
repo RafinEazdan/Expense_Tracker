@@ -1,5 +1,6 @@
 from datetime import datetime
 import email
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 class UserCreate(BaseModel):
@@ -13,3 +14,15 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ExpenseReport(BaseModel):
+    amount: float
+    category: str
+    description: Optional[str] = None
+
+class ExpenseResponse(BaseModel):
+    id: int
+    amount: float
+    category: str
+    description: Optional[str] = None
+    created_at: datetime
