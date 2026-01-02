@@ -52,11 +52,11 @@ def get_expenses(db: Connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts Not Found!")
 
 
-@app.get('/expenses', response_model=schemas.ExpenseResponse)
+@app.post('/expenses', response_model=schemas.ExpenseResponse)
 def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_db)):
     try:
         with db.cursor() as cursor:
-            cursor.execute('''Insert into expenses (amount, category, description) VALUES (%s, %s, %s) ''',(expenses.amount, expenses.category, expenses.description))
+            cursor.execute('''Insert into expenses (amount, category, description) VALUES (%s, %s, %s) RETURNING *''',(expenses.amount, expenses.category, expenses.description))
             Expenses = cursor.fetchone()
         db.commit()
         return Expenses
