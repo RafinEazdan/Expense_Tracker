@@ -64,3 +64,4 @@ def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_d
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Post cannot be posted! Error is {e}")
+    
