@@ -45,7 +45,7 @@ def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db)):
      except UniqueViolation:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Email Already Registered. Try login!")
-     # this is a comment
+     
         
 
 
