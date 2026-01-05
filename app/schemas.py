@@ -28,3 +28,11 @@ class ExpenseResponse(BaseModel):
     created_at: datetime
     class Config:
         from_attributes = True
+
+
+class Token(BaseModel):
+    token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    id: Optional[int]  = None
