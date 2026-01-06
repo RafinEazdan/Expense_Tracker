@@ -7,17 +7,18 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from psycopg import Connection
 
-from app import schemas
-from app.database import get_db
+import schemas
+from database import get_db
 
 load_dotenv()
 
 
-oauth2_scheme = OAuth2PasswordBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+ACCESS_TOKEN_EXPIRE_MINUTES = float(ACCESS_TOKEN_EXPIRE_MINUTES)
 
 def create_token(data: dict):
     to_encode = data.copy()

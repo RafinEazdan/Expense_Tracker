@@ -1,5 +1,4 @@
 from datetime import datetime
-import email
 from typing import Optional
 from pydantic import BaseModel, EmailStr
 
