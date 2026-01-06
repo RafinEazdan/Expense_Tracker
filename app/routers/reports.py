@@ -5,6 +5,7 @@ from psycopg import Connection
 from psycopg.errors import UniqueViolation
 import schemas
 from typing import List
+from oauth import get_current_user
 
 
 
@@ -14,7 +15,7 @@ router = APIRouter(
 )
 # ----------------Expense Reports--------------------
 @router.get('/', response_model=List[schemas.ExpenseResponse])
-def get_expenses(db: Connection = Depends(get_db)):
+def get_expenses(db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     try:
         with db.cursor() as cursor:
             cursor.execute('''SELECT * from expenses;''')
@@ -26,7 +27,7 @@ def get_expenses(db: Connection = Depends(get_db)):
 
 
 @router.post('/', response_model=schemas.ExpenseResponse)
-def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_db)):
+def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     try:
         with db.cursor() as cursor:
             cursor.execute('''Insert into expenses (amount, category, description) VALUES (%s, %s, %s) RETURNING *''',(expenses.amount, expenses.category, expenses.description))
@@ -39,7 +40,7 @@ def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_d
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Expense cannot be posted! Error: {e}")
     
 @router.get('/{id}', response_model=schemas.ExpenseResponse)
-def get_a_expense_report(id: int, db: Connection = Depends(get_db)):
+def get_a_expense_report(id: int, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
         cursor.execute('''SELECT * from expenses where id = %s;''',(id,))
         report = cursor.fetchone()
@@ -49,7 +50,7 @@ def get_a_expense_report(id: int, db: Connection = Depends(get_db)):
     return report
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_report(id: int, db: Connection = Depends(get_db)):
+def delete_report(id: int, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
         cursor.execute('''Delete from expenses where id = %s;''',(id,))
         deleted_report = cursor.rowcount
@@ -61,7 +62,7 @@ def delete_report(id: int, db: Connection = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put("/{id}", response_model=schemas.ExpenseResponse)
-def update_report(id: int, expense_report: schemas.ExpenseReport,  db: Connection = Depends(get_db)):
+def update_report(id: int, expense_report: schemas.ExpenseReport,  db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
         cursor.execute('UPDATE expenses SET amount=%s, category=%s, description=%s WHERE id=%s RETURNING *',(expense_report.amount, expense_report.category, expense_report.description, id))
         updated_report = cursor.fetchone()
