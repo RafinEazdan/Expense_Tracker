@@ -1,3 +1,4 @@
+from oauth import get_current_user
 import utils
 from database import get_db
 from fastapi import FastAPI, Depends, HTTPException, status, Response, APIRouter
@@ -38,4 +39,13 @@ def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Email Already Registered. Try login!")
      
-        
+
+@router.get('/{id}', response_model=schemas.UserResponse)
+def get_users(id:int, db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if id == current_user["id"]:
+        with db.cursor() as cursor:
+            cursor.execute(''' SELECT * from users where id = %s; ''', (id,))
+            users = cursor.fetchone()
+    else:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not authorized to access this information')
+    return users
