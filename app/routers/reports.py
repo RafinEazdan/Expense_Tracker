@@ -52,12 +52,12 @@ def get_a_expense_report(id: int, db: Connection = Depends(get_db), current_user
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_report(id: int, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
-        cursor.execute('''Delete from expenses where id = %s;''',(id,))
+        cursor.execute('''Delete from expenses where id = %s and owner_id=%s;''',(id,current_user["id"]))
         deleted_report = cursor.rowcount
     db.commit()
     if deleted_report == 0:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Requested Expense Report Cannot be found. Try again!")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You are not authorized to delete this expense or it does not exist!")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
