@@ -40,12 +40,11 @@ def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Email Already Registered. Try login!")
      
 
-@router.get('/{id}', response_model=schemas.UserResponse)
-def get_users(id:int, db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    if id == current_user["id"]:
-        with db.cursor() as cursor:
-            cursor.execute(''' SELECT * from users where id = %s; ''', (id,))
-            users = cursor.fetchone()
-    else:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not authorized to access this information')
+@router.get('/profile', response_model=schemas.UserResponse)
+def get_users(db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    with db.cursor() as cursor:
+        cursor.execute(''' SELECT * from users where id = %s; ''', (current_user["id"],))
+        users = cursor.fetchone()
+    if users is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='User details is unavailable')
     return users
