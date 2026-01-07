@@ -18,7 +18,7 @@ router = APIRouter(
 def get_expenses(db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     try:
         with db.cursor() as cursor:
-            cursor.execute('''SELECT * from expenses;''')
+            cursor.execute('''SELECT * from expenses where owner_id = %s;''', (current_user['id'],))
             Expenses = cursor.fetchall()
         return Expenses
 
@@ -30,7 +30,7 @@ def get_expenses(db: Connection = Depends(get_db), current_user: int = Depends(g
 def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     try:
         with db.cursor() as cursor:
-            cursor.execute('''Insert into expenses (amount, category, description) VALUES (%s, %s, %s) RETURNING *''',(expenses.amount, expenses.category, expenses.description))
+            cursor.execute('''Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *''',(expenses.amount, expenses.category, expenses.description, current_user['id']))
             Expenses = cursor.fetchone()
         db.commit()
         return Expenses

@@ -25,6 +25,7 @@ class ExpenseResponse(BaseModel):
     category: str
     description: Optional[str] = None
     created_at: datetime
+    owner_id: int
     class Config:
         from_attributes = True
 
