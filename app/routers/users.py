@@ -14,12 +14,13 @@ router = APIRouter(
 
 
 # -------------------USERS---------------------
-@router.get('/')
-def get_users(db: Connection = Depends(get_db)):
-    with db.cursor() as cursor:
-        cursor.execute(''' SELECT * from users; ''')
-        users = cursor.fetchall()
-    return users
+# get all users for admin use
+# @router.get('/')
+# def get_users(db: Connection = Depends(get_db)):
+#     with db.cursor() as cursor:
+#         cursor.execute(''' SELECT * from users; ''')
+#         users = cursor.fetchall()
+#     return users
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
 def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db)):
