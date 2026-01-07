@@ -42,10 +42,10 @@ def get_expenses(expenses: schemas.ExpenseReport, db: Connection = Depends(get_d
 @router.get('/{id}', response_model=schemas.ExpenseResponse)
 def get_a_expense_report(id: int, db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
-        cursor.execute('''SELECT * from expenses where id = %s;''',(id,))
+        cursor.execute('''SELECT * from expenses where id = %s AND owner_id = %s;''',(id,current_user["id"]))
         report = cursor.fetchone()
     if report is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Requested Expense Report Cannot be found. Try again!") 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You are not authorized to access this expense or it does not exist!") 
     
     return report
 
