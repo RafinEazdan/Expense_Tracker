@@ -64,11 +64,11 @@ def delete_report(id: int, db: Connection = Depends(get_db), current_user: int =
 @router.put("/{id}", response_model=schemas.ExpenseResponse)
 def update_report(id: int, expense_report: schemas.ExpenseReport,  db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
     with db.cursor() as cursor:
-        cursor.execute('UPDATE expenses SET amount=%s, category=%s, description=%s WHERE id=%s RETURNING *',(expense_report.amount, expense_report.category, expense_report.description, id))
+        cursor.execute('UPDATE expenses SET amount=%s, category=%s, description=%s WHERE id=%s and owner_id = %s RETURNING * ',(expense_report.amount, expense_report.category, expense_report.description, id, current_user["id"]))
         updated_report = cursor.fetchone()
         db.commit()
 
     if updated_report is None:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Requested Expense Report Cannot be found. Try again!')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='You are not authorized to update this expense or it does not exist!')
     return updated_report
