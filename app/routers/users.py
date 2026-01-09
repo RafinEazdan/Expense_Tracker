@@ -1,3 +1,4 @@
+from jinja2 import DictLoader
 from oauth import get_current_user
 import utils
 from database import get_db
@@ -48,3 +49,16 @@ def get_users(db: Connection = Depends(get_db), current_user: dict = Depends(get
     if users is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='User details is unavailable')
     return users
+
+@router.delete('/profile/delete', status_code=status.HTTP_204_NO_CONTENT)
+def delete_users(db: Connection = Depends(get_db), current_user: DictLoader = Depends(get_current_user)):
+    with db.cursor() as cursor:
+        cursor.execute('Delete from users where id = %s;',(current_user["id"],))
+        deleted_user = cursor.rowcount
+
+    db.commit()
+
+    if deleted_user == 0:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not logged in!")
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

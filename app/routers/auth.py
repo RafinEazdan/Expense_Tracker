@@ -5,7 +5,9 @@ from psycopg import Connection
 import oauth, schemas, utils
 from database import get_db
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Login"]
+)
 
 @router.post('/login', response_model=schemas.Token)
 def login(user_credential: OAuth2PasswordRequestForm = Depends(), db: Connection = Depends(get_db)):
