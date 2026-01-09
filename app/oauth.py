@@ -49,9 +49,15 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Connection = Depen
 
     token = verify_token(token, credential_exception)
 
+    if token is None:
+        raise credential_exception
+
     with db.cursor() as cursor:
         cursor.execute('select id from users where id = %s', (token.id,))
         user = cursor.fetchone()
+
+    if user is None:
+        raise credential_exception
     
     return user
     

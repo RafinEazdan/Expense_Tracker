@@ -43,6 +43,8 @@ def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db)):
 
 @router.get('/profile', response_model=schemas.UserResponse)
 def get_users(db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if current_user["id"] is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='You must login first!')
     with db.cursor() as cursor:
         cursor.execute(''' SELECT * from users where id = %s; ''', (current_user["id"],))
         users = cursor.fetchone()
