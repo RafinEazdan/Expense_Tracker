@@ -15,10 +15,10 @@ router = APIRouter(
 )
 # ----------------Expense Reports--------------------
 @router.get('/', response_model=List[schemas.ExpenseResponse])
-def get_expenses(db: Connection = Depends(get_db), current_user: int = Depends(get_current_user)):
+def get_expenses(db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
     try:
         with db.cursor() as cursor:
-            cursor.execute('''SELECT * from expenses where owner_id = %s;''', (current_user['id'],))
+            cursor.execute('''SELECT * from expenses where owner_id = %s;''', (current_user["id"],))
             Expenses = cursor.fetchall()
         return Expenses
 
