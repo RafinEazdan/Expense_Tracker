@@ -1,21 +1,35 @@
 # Expense Tracker API (FastAPI + PostgreSQL)
 
-> **Work in Progress**
->
-> This backend is actively being developed. Core flows (auth + expense CRUD) are in place, and the API surface may change as the project evolves.
+A full-stack Expense Tracker application with a **FastAPI** backend and a modern frontend interface. Track your expenses, manage categories, and visualize your spending patterns.
 
-A lightweight backend API for an Expense Tracker application, built with **FastAPI** and **PostgreSQL**. It provides:
+## 🌐 Live Demo & Frontend
 
-- User registration
+- **Live Application:** [https://expense-tracker-self-mu-50.vercel.app/](https://expense-tracker-self-mu-50.vercel.app/)
+- **Frontend Repository:** [https://github.com/RafinEazdan/Expense_Tracker_Frontend](https://github.com/RafinEazdan/Expense_Tracker_Frontend)
+
+## Backend Features
+
+This backend API provides:
+
+- User registration and authentication
 - JWT-based login (OAuth2 password flow)
 - CRUD endpoints for expense reports (protected)
+- User-specific expense data (per-user isolation)
 - Interactive API docs via Swagger UI
+
+### Recent Updates
+
+- ✅ Frontend application deployed and live
+- ✅ User-specific expense tracking implemented
+- ✅ Complete authentication flow with JWT
+- ✅ Full CRUD operations for expenses
 
 ### Roadmap (near-term)
 
-- Associate expenses with the authenticated user (per-user data)
 - Add pagination / filtering to expense listings
 - Improve validation and error responses
+- Add expense categories management
+- Implement export functionality (CSV/PDF)
 
 ---
 
@@ -224,8 +238,10 @@ curl -X POST "http://localhost:5000/expenses" \
 
 ## Notes / Current Behavior
 
-- Expense reports are currently **not linked to a specific user** in the database schema or queries (no `user_id` column is used).
-- The `/expenses` routes are protected and require a valid JWT, but the list endpoint currently returns **all expenses** in the table.
+- Expense reports are **linked to authenticated users** via the `owner_id` column.
+- The `/expenses` routes are protected and require a valid JWT.
+- Users can only view, create, edit, and delete their own expenses.
+- The frontend application provides a complete user interface for all API features.
 
 ---
 
