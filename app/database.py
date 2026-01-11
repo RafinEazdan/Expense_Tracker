@@ -10,13 +10,9 @@ def get_db():
     while True:
         try:
             conn = psycopg.connect(
-            host=os.getenv("HOST_DB"),
-            dbname=os.getenv("DB_NAME"),
-            user=os.getenv("USER_DB"),
-            password=os.getenv("PASSWORD"),
-            port=os.getenv("DB_PORT"),
-            row_factory=dict_row
-        )
+                os.getenv("DATABASE_URL"),
+                row_factory=dict_row
+            )
             print("DB is connected!!!!!!")
             break
         except Exception as e:
