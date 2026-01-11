@@ -1,49 +1,73 @@
-# Expense Tracker API (FastAPI + PostgreSQL)
+# 💰 Expense Tracker API
 
-A full-stack Expense Tracker application with a **FastAPI** backend and a modern frontend interface. Track your expenses, manage categories, and visualize your spending patterns.
+<div align="center">
 
-## 🌐 Live Demo & Frontend
+**A full-stack Expense Tracker application with a FastAPI backend and modern frontend interface**
 
-- **Live Application:** [https://expense-tracker-self-mu-50.vercel.app/](https://expense-tracker-self-mu-50.vercel.app/)
+Track your expenses • Manage categories • Visualize spending patterns
+
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+
+</div>
+
+---
+
+## 🚀 Live Deployment
+
+### 🌐 Published Website
+- **Frontend (Live Application):** [https://expense-tracker-self-mu-50.vercel.app/](https://expense-tracker-self-mu-50.vercel.app/)
+- **Backend API (Hosted on Render):** [https://expense-tracker-r3tn.onrender.com](https://expense-tracker-r3tn.onrender.com)
+- **API Documentation:** [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
+
+### 📦 Repositories
 - **Frontend Repository:** [https://github.com/RafinEazdan/Expense_Tracker_Frontend](https://github.com/RafinEazdan/Expense_Tracker_Frontend)
+- **Backend Repository:** _(Current Repository)_
 
-## Backend Features
+---
+
+## ✨ Backend Features
 
 This backend API provides:
 
-- User registration and authentication
-- JWT-based login (OAuth2 password flow)
-- CRUD endpoints for expense reports (protected)
-- User-specific expense data (per-user isolation)
-- Interactive API docs via Swagger UI
+- 🔐 User registration and authentication
+- 🎫 JWT-based login (OAuth2 password flow)
+- 📝 CRUD endpoints for expense reports (protected)
+- 👤 User-specific expense data (per-user isolation)
+- 📚 Interactive API docs via Swagger UI
+- 🌐 Production deployment on Render
 
-### Recent Updates
+### 🎉 Recent Updates
 
-- ✅ Frontend application deployed and live
+- ✅ **Backend deployed to production on Render**
+- ✅ Frontend application deployed and live on Vercel
 - ✅ User-specific expense tracking implemented
 - ✅ Complete authentication flow with JWT
 - ✅ Full CRUD operations for expenses
 
-### Roadmap (near-term)
+### 🗺️ Roadmap (near-term)
 
-- Add pagination / filtering to expense listings
-- Improve validation and error responses
-- Add expense categories management
-- Implement export functionality (CSV/PDF)
-
----
-
-## Tech Stack
-
-- **FastAPI** (Python)
-- **PostgreSQL** via **psycopg**
-- **JWT** auth (`PyJWT`)
-- **Password hashing** with `passlib[argon2]`
-- **Pydantic** schemas
+- 📄 Add pagination / filtering to expense listings
+- ⚠️ Improve validation and error responses
+- 🏷️ Add expense categories management
+- 📊 Implement export functionality (CSV/PDF)
+- 📈 Add expense analytics and charts
 
 ---
 
-## Project Structure
+## 🛠️ Tech Stack
+
+- **FastAPI** - Modern, fast web framework for building APIs
+- **PostgreSQL** - Robust relational database via **psycopg**
+- **JWT** - Secure authentication using `PyJWT`
+- **Argon2** - Password hashing with `passlib[argon2]`
+- **Pydantic** - Data validation using Python type annotations
+- **Render** - Cloud hosting platform for backend deployment
+
+---
+
+## 📁 Project Structure
 
 ```text
 .
@@ -63,22 +87,22 @@ This backend API provides:
 
 ---
 
-## Setup
+## 🚀 Setup
 
-### 1) Create a virtual environment
+### 1️⃣ Create a virtual environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
-### 2) Install dependencies
+### 2️⃣ Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3) Configure environment variables
+### 3️⃣ Configure environment variables
 
 This project loads configuration from `.env`.
 
@@ -106,7 +130,7 @@ Notes:
 
 ---
 
-## Database
+## 🗄️ Database
 
 The API expects a PostgreSQL database with `users` and `expenses` tables.
 
@@ -131,7 +155,7 @@ CREATE TABLE IF NOT EXISTS expenses (
 
 ---
 
-## Run the API
+## ▶️ Run the API
 
 From the repository root:
 
@@ -147,13 +171,15 @@ uvicorn app.main:app --reload --port 5000
 
 Once running:
 
-- Health check: `GET /`
-- Swagger UI: `GET /docs`
-- ReDoc: `GET /redoc`
+- ❤️ Health check: `GET /`
+- 📖 Swagger UI: `GET /docs`
+- 📘 ReDoc: `GET /redoc`
+
+> **💡 Tip:** You can also test the live API at [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
 
 ---
 
-## Authentication Flow
+## 🔐 Authentication Flow
 
 1) **Register** a user
 2) **Login** to get a JWT token
@@ -165,13 +191,13 @@ Authorization: Bearer <token>
 
 ---
 
-## API Endpoints
+## 📍 API Endpoints
 
-### Health
+### 💚 Health
 
 - `GET /` → `{ "message": "Website is UP!" }`
 
-### Users
+### 👥 Users
 
 - `GET /users` — list users
 - `POST /users` — create user
@@ -185,7 +211,7 @@ Request body (`POST /users`):
 }
 ```
 
-### Auth
+### 🔑 Auth
 
 - `POST /login` — obtain JWT token
 
@@ -211,7 +237,7 @@ Response:
 }
 ```
 
-### Expense Reports (Protected)
+### 💸 Expense Reports (Protected)
 
 All endpoints below require a valid `Authorization: Bearer ...` header.
 
@@ -236,18 +262,42 @@ curl -X POST "http://localhost:5000/expenses" \
 
 ---
 
-## Notes / Current Behavior
+## 📝 Notes / Current Behavior
 
-- Expense reports are **linked to authenticated users** via the `owner_id` column.
-- The `/expenses` routes are protected and require a valid JWT.
-- Users can only view, create, edit, and delete their own expenses.
-- The frontend application provides a complete user interface for all API features.
+- 🔒 Expense reports are **linked to authenticated users** via the `owner_id` column.
+- 🛡️ The `/expenses` routes are protected and require a valid JWT.
+- 👤 Users can only view, create, edit, and delete their own expenses.
+- 🎨 The frontend application provides a complete user interface for all API features.
+- 🌐 Both frontend and backend are deployed and accessible online.
+
+---
+
+## 💻 Development Tips
+
+- 🔄 If you change environment variables, restart the server.
+- 🧪 Use Swagger UI at `/docs` to try endpoints quickly.
+- 🌍 Test the production API at: [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
 
 ---
 
-## Development Tips
+## 📄 License
 
-- If you change environment variables, restart the server.
-- Use Swagger UI at `/docs` to try endpoints quickly.
+This project is open source and available under the MIT License.
 
 ---
+
+## 👨‍💻 Author
+
+**Eazdan Mostafa Rafin**
+
+Feel free to reach out for any questions or contributions!
+
+---
+
+<div align="center">
+
+Made with ❤️ using FastAPI and PostgreSQL
+
+**[⬆ Back to Top](#-expense-tracker-api)**
+
+</div>
