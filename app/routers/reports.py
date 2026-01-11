@@ -1,11 +1,11 @@
-import utils
-from database import get_db
+import app.utils as utils
+from app.database import get_db
 from fastapi import FastAPI, Depends, HTTPException, status, Response, APIRouter
 from psycopg import Connection
 from psycopg.errors import UniqueViolation
-import schemas
+import app.schemas as schemas
 from typing import List
-from oauth import get_current_user
+from app.oauth import get_current_user
 
 
 

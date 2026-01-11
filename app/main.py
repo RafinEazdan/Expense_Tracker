@@ -1,12 +1,9 @@
-import utils
-from database import get_db
+from app.database import get_db
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
-from psycopg import Connection
-from psycopg.errors import UniqueViolation
-import schemas
-from typing import List
-from routers import reports, users, auth
+# from psycopg import Connection
+# from psycopg.errors import UniqueViolation
+from .routers import reports, users, auth
 
 
 app = FastAPI()

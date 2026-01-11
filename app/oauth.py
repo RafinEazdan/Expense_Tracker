@@ -7,8 +7,8 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 from psycopg import Connection
 
-import schemas
-from database import get_db
+import app.schemas as schemas
+from app.database import get_db
 
 load_dotenv()
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from psycopg import Connection
-
-import oauth, schemas, utils
-from database import get_db
+import app.utils as utils
+from app import oauth, schemas
+from app.database import get_db
 
 router = APIRouter(
     tags=["Login"]
