@@ -28,16 +28,4 @@ app.include_router(auth.router)
 @app.get("/")
 async def root():
 
-    return{"message":"Website is UP!"}
-
-
-     
-        
-
-
-
-
-
-
-
-
+    return{"message":"Website is UP! try Nowwwwwww. yayayayaay. You sure? Yes absolutely!!"}

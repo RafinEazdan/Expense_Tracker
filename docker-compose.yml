@@ -2,11 +2,33 @@ version: '3.8'
 services: 
   api:
     build: .
+    depends_on:
+      - postgres
     ports:
       - 8000:8000
+
+
+    volumes:
+      - ./:/usr/src/app:ro
+      
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
       #<port on localhost> : <port on container> #spacing matters in yml file
     env_file:
       - ./.env
     # environment:
     #   - name=value
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=expense_tracker
+
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
+
       
