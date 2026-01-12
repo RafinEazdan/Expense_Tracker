@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # from psycopg.errors import UniqueViolation
 from .routers import reports, users, auth
 
+# I am inside the new branch
 
 app = FastAPI()
 # CORS Configuration
