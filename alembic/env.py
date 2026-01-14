@@ -1,6 +1,7 @@
+from json import load
 import os
 from dotenv import load_dotenv
-from app.models import metadata as target_metadata
+from app.models import Base
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -14,6 +15,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
+load_dotenv()
 config.set_main_option(
     "sqlalchemy.url",
     os.getenv("DATABASE_URL","")
@@ -26,7 +28,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
