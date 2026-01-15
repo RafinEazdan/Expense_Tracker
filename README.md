@@ -42,6 +42,7 @@ This backend API provides:
 
 - ✅ **Backend deployed to production on Render**
 - ✅ Frontend application deployed and live on Vercel
+- ✅ Docker image updated on DockerHub (`eazdanrafin/expense_tracker:latest`)
 - ✅ User-specific expense tracking implemented
 - ✅ Complete authentication flow with JWT
 - ✅ Full CRUD operations for expenses
@@ -176,6 +177,35 @@ Once running:
 - 📘 ReDoc: `GET /redoc`
 
 > **💡 Tip:** You can also test the live API at [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
+
+---
+
+## 🐳 Run with Docker
+
+### Option A: Run the published DockerHub image
+
+The backend image is published/updated on DockerHub as:
+
+- `eazdanrafin/expense_tracker:latest`
+- DockerHub: https://hub.docker.com/repository/docker/eazdanrafin/expense_tracker/
+
+Run it (expects a `.env` file in the current directory):
+
+```bash
+docker run -p 8000:8000 --env-file .env eazdanrafin/expense_tracker:latest
+```
+
+Note: this runs **only the API container**. Your `.env` must point to a reachable Postgres instance (e.g., a managed DB, or a local DB).
+
+### Option B: Run API + Postgres with Docker Compose
+
+This repo includes `docker-compose.yml` to start both the API and a Postgres container:
+
+```bash
+docker compose up --build
+```
+
+If you use compose, set `HOST_DB=postgres` in `.env` (so the API container can reach the Postgres service).
 
 ---
 
