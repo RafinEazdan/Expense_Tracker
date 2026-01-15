@@ -46,15 +46,6 @@ This backend API provides:
 - ✅ User-specific expense tracking implemented
 - ✅ Complete authentication flow with JWT
 - ✅ Full CRUD operations for expenses
-
-### 🗺️ Roadmap (near-term)
-
-- 📄 Add pagination / filtering to expense listings
-- ⚠️ Improve validation and error responses
-- 🏷️ Add expense categories management
-- 📊 Implement export functionality (CSV/PDF)
-- 📈 Add expense analytics and charts
-
 ---
 
 ## 🛠️ Tech Stack
@@ -62,6 +53,7 @@ This backend API provides:
 - **FastAPI** - Modern, fast web framework for building APIs
 - **PostgreSQL** - Robust relational database via **psycopg**
 - **JWT** - Secure authentication using `PyJWT`
+- **Alembic** - Database Migration Tool
 - **Argon2** - Password hashing with `passlib[argon2]`
 - **Pydantic** - Data validation using Python type annotations
 - **Render** - Cloud hosting platform for backend deployment
