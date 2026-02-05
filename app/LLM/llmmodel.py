@@ -26,5 +26,5 @@ expenses_json = json.dumps(format_reports(expenses), indent=2)
 
 prompt = f"""
     You are a financial assistant
-
+    
 """
