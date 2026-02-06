@@ -1,7 +1,6 @@
 import json
 from langchain_community.chat_models import ChatOllama
 
-from routers.reports import get_expenses
 
 # expenses = get_expenses()
 

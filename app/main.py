@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 # from psycopg import Connection
 # from psycopg.errors import UniqueViolation
-from .routers import reports, users, auth
+from .routers import reports, users, auth, llm
 
 
 app = FastAPI()
@@ -24,6 +24,7 @@ app.add_middleware(
 app.include_router(reports.router)
 app.include_router(users.router)
 app.include_router(auth.router)
+app.include_router(llm.router)
 
 @app.get("/")
 async def root():
