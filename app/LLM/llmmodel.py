@@ -3,7 +3,7 @@ from langchain_community.chat_models import ChatOllama
 
 from routers.reports import get_expenses
 
-expenses = get_expenses()
+# expenses = get_expenses()
 
 model = ChatOllama(model="llama3.2:latest")
 
@@ -17,14 +17,18 @@ def format_reports(expenses):
         "note": e.get("description", "")
         }
         reports.append(format)
-        
+    
     return reports
 
 
-expenses_json = json.dumps(format_reports(expenses), indent=2)
+def query_analysis(expenses: dict):
+    expenses_format = format_reports(expenses) 
+    expenses_json = json.dumps(format_reports(expenses_format), indent=2)
+    prompt =  f"""
+    You are a financial assistant. Analyze the expense data and provide clear, 
+    concise insights. Focus on patterns, trends, and actionable advice.
+    Expense data: {expenses_json}
+    """
+    response = model.invoke(prompt)
 
-
-prompt = f"""
-    You are a financial assistant
-    
-"""
+    return response.content
