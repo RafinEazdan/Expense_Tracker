@@ -1,10 +1,12 @@
 import json
+import os
+from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from fastapi import HTTPException, status
 
-# expenses = get_expenses()
+load_dotenv()
 
-model = ChatOllama(model="llama3.2:latest")
+model = ChatOllama(model=os.getenv("LLM_MODEL"))
 
 def format_reports(expenses):
     reports = []
@@ -34,6 +36,7 @@ You tell a very short story based on the expenses done by the user. The story wi
 - the story can be fantasy mixed with real life touch.
 - dont show the stats directly, you can show but not like a list
 - do not ask any follow up question ever
+- try add timeline like months
 Expense data:
 {expenses_json}
     """
