@@ -12,13 +12,18 @@ router = APIRouter(
 
 @router.get("/llm/analysis",status_code=status.HTTP_200_OK)
 async def analysis(db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # print(f"Current user = {current_user["id"]}")
     try:
         with db.cursor() as cursor:
+            print("DB is loaded in LLM")
+            print("current_user:", current_user)
+            print("type(id):", type(current_user["id"]))
             cursor.execute('''SELECT * from expenses where owner_id = %s;''', (current_user["id"],))
-            Expenses = cursor.fetchall()
+            print("Query Failed")
+            expenses = cursor.fetchall()
 
         try:
-            lm_reponse = await query_analysis(Expenses)
+            lm_reponse = await query_analysis(expenses)
 
             return lm_reponse
         except Exception as e:

@@ -1,6 +1,6 @@
 import json
 from langchain_community.chat_models import ChatOllama
-
+from fastapi import HTTPException, status
 
 # expenses = get_expenses()
 
@@ -21,13 +21,17 @@ def format_reports(expenses):
 
 
 def query_analysis(expenses: dict):
-    expenses_format = format_reports(expenses) 
-    expenses_json = json.dumps(format_reports(expenses_format), indent=2)
-    prompt =  f"""
+    try:
+        expenses_format = format_reports(expenses) 
+        expenses_json = json.dumps(format_reports(expenses_format), indent=2)
+        prompt =  f"""
     You are a financial assistant. Analyze the expense data and provide clear, 
     concise insights. Focus on patterns, trends, and actionable advice.
     Expense data: {expenses_json}
     """
-    response = model.invoke(prompt)
+        response = model.invoke(prompt)
 
-    return response.content
+        return response.content
+    
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLm Issue")

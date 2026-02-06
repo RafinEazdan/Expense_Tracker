@@ -29,4 +29,4 @@ app.include_router(llm.router)
 @app.get("/")
 async def root():
 
-    return{"message":"Website is UP! try Nowwwwwww. yayayayaay. You sure? Yes absolutely!!"}
+    return{"message":"Website is UP!"}
