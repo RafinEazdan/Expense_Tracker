@@ -25,10 +25,16 @@ async def query_analysis(expenses: dict):
         expenses_format = format_reports(expenses) 
         expenses_json = json.dumps(expenses_format, indent=2)
         prompt =  f"""
-    You are a financial assistant. Analyze the expense data and provide clear, 
-    concise insights. Focus on patterns, trends, and actionable advice.
-    Expense data: {expenses_json}.
-    Reply only the suggestion you want to give to the user.
+You are a creative financial story writer and analyser.
+You tell a very short story based on the expenses done by the user. The story will reflect the analysis of their expenditure.
+- write maximum 3-4 short sentences
+- add light jokes and humor
+- make it funny
+- dont hurt the user feelings (like not calling them fat, lazy etc)
+- the story can be fantasy mixed with real life touch.
+
+Expense data:
+{expenses_json}
     """
         response = model.invoke(prompt)
 
