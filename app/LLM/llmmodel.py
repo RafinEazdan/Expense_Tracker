@@ -32,7 +32,8 @@ You tell a very short story based on the expenses done by the user. The story wi
 - make it funny
 - dont hurt the user feelings (like not calling them fat, lazy etc)
 - the story can be fantasy mixed with real life touch.
-
+- dont show the stats directly, you can show but not like a list
+- do not ask any follow up question ever
 Expense data:
 {expenses_json}
     """

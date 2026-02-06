@@ -10,7 +10,7 @@ router = APIRouter(
     tags=["AI Model Requests"]
 )
 
-@router.get("/llm/analysis",status_code=status.HTTP_200_OK)
+@router.get("/llm/analysis/story",status_code=status.HTTP_200_OK)
 async def analysis(db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
     # print(f"Current user = {current_user["id"]}")
     try:
