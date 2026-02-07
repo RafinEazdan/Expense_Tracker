@@ -14,7 +14,7 @@ expense_report = ExpenseReport.model_json_schema()
 # expense_response = ExpenseResponse.model_json_schema()
 table_name = "expenses"
 # print(f"Expense Report: {expense_report} \n Expense Response: {expense_response}")
-def sql_query_gen(query):
+def sql_query_gen(query, owner_id):
     try:
         prompt = f"""
                 You are a database engineer.
@@ -24,7 +24,10 @@ Your task is to convert a natural-language instruction into a valid SQL INSERT s
 Context:
 - Target table name: {table_name}
 - Table schema :{expense_report}
+- owner_id: {owner_id}
 
+Demo:
+- Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *
 
 Rules:
 - Generate ONLY a single SQL INSERT statement.
