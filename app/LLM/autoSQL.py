@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from fastapi import HTTPException, status
 
-from schemas import ExpenseResponse, ExpenseReport
+from app.schemas import ExpenseReport
 
 load_dotenv()
 model = ChatOllama(model=os.getenv("LLM_MODEL"))
@@ -23,10 +23,8 @@ Your task is to convert a natural-language instruction into a valid SQL INSERT s
 
 Context:
 - Target table name: {table_name}
-- Table schema (ExpenseReport):
-  - amount (FLOAT, required)
-  - category (VARCHAR, required)
-  - description (VARCHAR, optional)
+- Table schema :{expense_report}
+
 
 Rules:
 - Generate ONLY a single SQL INSERT statement.
