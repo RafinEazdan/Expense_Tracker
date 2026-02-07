@@ -4,7 +4,7 @@ from psycopg import Connection
 from app.database import get_db
 from app.oauth import get_current_user
 
-from app.LLM.llmmodel import query_analysis
+from app.LLM.storyLLM import query_analysis
 
 router = APIRouter(
     tags=["AI Model Requests"]
