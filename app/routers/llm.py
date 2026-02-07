@@ -5,7 +5,7 @@ from app.database import get_db
 from app.oauth import get_current_user
 
 from app.LLM.storyLLM import query_analysis
-
+from app.LLM.autoSQL import sql_query_gen
 router = APIRouter(
     tags=["AI Model Requests"]
 )
