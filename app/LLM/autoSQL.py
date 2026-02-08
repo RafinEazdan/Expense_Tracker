@@ -14,7 +14,7 @@ expense_report = ExpenseReport.model_json_schema()
 # expense_response = ExpenseResponse.model_json_schema()
 table_name = "expenses"
 # print(f"Expense Report: {expense_report} \n Expense Response: {expense_response}")
-def sql_query_gen(query, owner_id):
+async def sql_query_gen(query):
     try:
         prompt = f"""
                 You are a data extraction engine.
@@ -40,19 +40,28 @@ User input
 
 {query}
 
-Output format
-
+Output format(just give me the values, no extra keywords):
 amount, category, description
 
 """
+        response = await model.invoke(prompt)
+        print(response)
+        # Split safely into at most 3 parts
+        # parts = [p.strip() for p in response.split(",", maxsplit=2)]
 
-        response = model.invoke(prompt)
-        values = [v.strip() for v in response.split(",")]
-        amount, category, description = values
+        # if len(parts) != 3:
+        #     raise ValueError("Parsed output is not in expected 3-part format")
 
-        return amount, category, description
+        # amount, category, description = parts
+
+        # # If description is missing use None
+        # if description.lower() in ("null", ""):
+        #     description = None
+
+        return response
     
     except Exception as e:
+        print("LLM Failed")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLM failed")
 
 

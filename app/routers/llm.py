@@ -7,7 +7,7 @@ from app.oauth import get_current_user
 from app.LLM.storyLLM import query_analysis
 from app.LLM.autoSQL import sql_query_gen
 
-from app.schemas import ExpenseResponse, ExpenseReport
+from app.schemas import ExpenseResponse, ExpenseReport, LLMxSQL
 
 router = APIRouter(
     tags=["AI Model Requests"]
@@ -34,22 +34,25 @@ async def analysis(db: Connection = Depends(get_db), current_user: dict = Depend
 
 
 @router.post("/llm/sql-gen",status_code=status.HTTP_200_OK, response_model=ExpenseResponse)
-async def sql_gen(query:str ,db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    try:
+async def sql_gen(query: LLMxSQL ,db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    
         try:
-            amount, category, description = await sql_query_gen(query)
+            # amount, category, description = await sql_query_gen(query)
+            response = await sql_query_gen(query)
+            return response
 
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLM is not accessible right now. Try manual input instead!")
-        with db.cursor() as cursor:
-            cursor.execute('''Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *''',(amount, category, description, current_user['id']))
-            Expenses = cursor.fetchone()
-        db.commit()
-        return Expenses
+        try:
+            with db.cursor() as cursor:
+                cursor.execute('''Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *''',(amount, category, description, current_user['id']))
+                Expenses = cursor.fetchone()
+            db.commit()
+            return Expenses
     
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Expense cannot be posted! Error: {e}")
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Expense cannot be posted! Error: {e}")
         
 
     
