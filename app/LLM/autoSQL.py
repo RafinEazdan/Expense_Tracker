@@ -17,37 +17,40 @@ table_name = "expenses"
 def sql_query_gen(query, owner_id):
     try:
         prompt = f"""
-                You are a database engineer.
+                You are a data extraction engine.
 
-Your task is to convert a natural-language instruction into a valid SQL INSERT statement.
+Your task is to extract values from a natural-language expense description.
 
-Context:
-- Target table name: {table_name}
-- Table schema :{expense_report}
-- owner_id: {owner_id}
+Schema
+	•	amount: number
+	•	category: string
+	•	description: string (optional)
 
-Demo:
-- Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *
+Rules
+	•	Output ONLY the values in this exact order:
+	1.	amount
+	2.	category
+	3.	description
+	•	Separate values using a comma.
+	•	Do NOT include field names, keywords, explanations, labels, quotes, or formatting.
+	•	If the description is missing, output NULL.
+	•	Do NOT add any extra text before or after the values.
 
-Rules:
-- Generate ONLY a single SQL INSERT statement.
-- Use ONLY the fields defined in the schema.
-- Do NOT add explanations, comments, or extra text.
-- Do NOT assume fields that are not provided.
-- If a field is optional and missing, omit it from the INSERT.
-- Values must be correctly typed and SQL-safe.
+User input
 
-User input (natural language):
-"{query}"
+{query}
 
-Output:
-A valid SQL INSERT statement for the given table.
+Output format
+
+amount, category, description
 
 """
 
-        reponse = model.invoke(prompt)
+        response = model.invoke(prompt)
+        values = [v.strip() for v in response.split(",")]
+        amount, category, description = values
 
-        return response
+        return amount, category, description
     
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLM failed")

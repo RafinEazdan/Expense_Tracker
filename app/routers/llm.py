@@ -36,17 +36,20 @@ async def analysis(db: Connection = Depends(get_db), current_user: dict = Depend
 @router.post("/llm/sql-gen",status_code=status.HTTP_200_OK, response_model=ExpenseResponse)
 async def sql_gen(query:str ,db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
     try:
-        owner_id = current_user["id"]
-        lm_reponse = await sql_query_gen(query, owner_id)
-        with db.cursor() as cursor:
-            cursor.execute('''SELECT * from expenses where owner_id = %s;''', (current_user["id"],))
-            expenses = cursor.fetchall()
-            # print(expenses) # Query is successful
-
         try:
+            amount, category, description = await sql_query_gen(query)
 
-            return lm_reponse
         except Exception as e:
-            raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY, detail="LLM Could not be called")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLM is not accessible right now. Try manual input instead!")
+        with db.cursor() as cursor:
+            cursor.execute('''Insert into expenses (amount, category, description, owner_id) VALUES (%s, %s, %s, %s) RETURNING *''',(amount, category, description, current_user['id']))
+            Expenses = cursor.fetchone()
+        db.commit()
+        return Expenses
+    
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts Not Found!")
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Expense cannot be posted! Error: {e}")
+        
+
+    
