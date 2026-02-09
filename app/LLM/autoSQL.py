@@ -19,7 +19,11 @@ async def sql_query_gen(query):
         prompt = f"""
                 You are a strict data extraction engine.
 
-You MUST follow the rules exactly.
+You are NOT an assistant.
+You are NOT allowed to explain anything.
+You are NOT allowed to show reasoning.
+
+Your ONLY job is to output extracted values.
 
 TASK:
 Extract values from the user input.
@@ -29,34 +33,46 @@ amount (number)
 category (string)
 description (string)
 
-DESCRIPTION RULE (IMPORTANT):
-- If the user does NOT explicitly mention a description,
-  you MUST generate a short, reasonable description
-  based on the category and context.
-- The description must be 2–5 words.
-- Do NOT invent unnecessary details.
+CATEGORY RULE (CRITICAL):
+- If the expense matches one of the predefined categories, you MUST use it.
+- If none match, generate a short suitable category (1–3 words, Title Case).
 
-OUTPUT RULES (CRITICAL):
-- Output EXACTLY one single line
-- Output ONLY raw values
-- Order must be: amount, category, description
-- Separate values using commas
+PREDEFINED CATEGORIES:
+Food & Dining
+Transportation
+Shopping
+Entertainment
+Bills & Utilities
+Healthcare
+Travel
+Education
+Personal Care
+
+DESCRIPTION RULE:
+- If the user does not explicitly give a description,
+  generate a short reasonable description (2–5 words).
+- No assumptions, no stories.
+
+OUTPUT RULES (ABSOLUTE):
+- Output ONLY the final values
+- Output EXACTLY ONE LINE
+- Format: amount,category,description
 - NO explanations
+- NO reasoning
+- NO bullet points
 - NO labels
+- NO prefixes
+- NO suffixes
 - NO quotes
+- NO markdown
 - NO newlines
 - NO extra spaces
+- If ANY rule is violated, the output is INVALID
 
 USER INPUT:
 {query}
 
-VALID OUTPUT EXAMPLES:
-56,food,meal expense
-120,transport,uber ride
-30,coffee,morning coffee
-
-NOW OUTPUT:
-
+FINAL OUTPUT (VALUES ONLY):
 """
         response_all = model.invoke(prompt)
         response = response_all.content
