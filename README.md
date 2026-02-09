@@ -2,9 +2,9 @@
 
 <div align="center">
 
-**A full-stack Expense Tracker application with a FastAPI backend and modern frontend interface**
+**Expense tracker backend API built with FastAPI + Postgres**
 
-Track your expenses • Manage categories • Visualize spending patterns
+Auth • Per-user expense CRUD • Optional LLM-assisted insights and entry
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -16,47 +16,36 @@ Track your expenses • Manage categories • Visualize spending patterns
 
 ## 🚀 Live Deployment
 
-### 🌐 Published Website
-- **Frontend (Live Application):** [https://expense-tracker-self-mu-50.vercel.app/](https://expense-tracker-self-mu-50.vercel.app/)
-- **Backend API (Hosted on Render):** [https://expense-tracker-r3tn.onrender.com](https://expense-tracker-r3tn.onrender.com)
-- **API Documentation:** [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
+- **Frontend (Vercel):** https://expense-tracker-self-mu-50.vercel.app/
+- **Backend API (Render):** https://expense-tracker-r3tn.onrender.com
+- **API Docs:** https://expense-tracker-r3tn.onrender.com/docs
 
 ### 📦 Repositories
-- **Frontend Repository:** [https://github.com/RafinEazdan/Expense_Tracker_Frontend](https://github.com/RafinEazdan/Expense_Tracker_Frontend)
-- **Backend Repository:** _(Current Repository)_
+
+- **Frontend Repository:** https://github.com/RafinEazdan/Expense_Tracker_Frontend
+- **Backend Repository:** (this repository)
 
 ---
 
-## ✨ Backend Features
+## ✨ Features
 
-This backend API provides:
-
-- 🔐 User registration and authentication
-- 🎫 JWT-based login (OAuth2 password flow)
-- 📝 CRUD endpoints for expense reports (protected)
-- 👤 User-specific expense data (per-user isolation)
+- 🔐 User registration + JWT login (OAuth2 password flow)
+- 🧾 Expense CRUD (scoped to the logged-in user)
 - 📚 Interactive API docs via Swagger UI
-- 🌐 Production deployment on Render
+- 🤖 Optional LLM endpoints:
+  - Generate a short “spending story” analysis from your expense history
+  - Convert natural language into an expense entry (amount/category/description)
 
-### 🎉 Recent Updates
-
-- ✅ **Backend deployed to production on Render**
-- ✅ Frontend application deployed and live on Vercel
-- ✅ Docker image updated on DockerHub (`eazdanrafin/expense_tracker:latest`)
-- ✅ User-specific expense tracking implemented
-- ✅ Complete authentication flow with JWT
-- ✅ Full CRUD operations for expenses
 ---
 
 ## 🛠️ Tech Stack
 
-- **FastAPI** - Modern, fast web framework for building APIs
-- **PostgreSQL** - Robust relational database via **psycopg**
-- **JWT** - Secure authentication using `PyJWT`
-- **Alembic** - Database Migration Tool
-- **Argon2** - Password hashing with `passlib[argon2]`
-- **Pydantic** - Data validation using Python type annotations
-- **Render** - Cloud hosting platform for backend deployment
+- **FastAPI** / **Starlette**
+- **PostgreSQL** via **psycopg**
+- **SQLAlchemy + Alembic** for models/migrations
+- **JWT** via **PyJWT**
+- **Argon2** via **passlib[argon2]**
+- **LangChain + Ollama** (optional, for LLM endpoints)
 
 ---
 
@@ -64,140 +53,206 @@ This backend API provides:
 
 ```text
 .
+├── Dockerfile
+├── docker-compose.yml
+├── alembic.ini
+├── alembic/
 ├── requirements.txt
-├── .env
 └── app/
     ├── main.py
     ├── database.py
+    ├── models.py
     ├── oauth.py
     ├── schemas.py
     ├── utils.py
+    ├── LLM/
+    │   ├── autoSQL.py
+    │   └── storyLLM.py
     └── routers/
         ├── auth.py
         ├── users.py
-        └── reports.py
+        ├── reports.py
+        └── llm.py
 ```
 
 ---
 
-## 🚀 Setup
+## ⚙️ Environment Variables
 
-### 1️⃣ Create a virtual environment
+This project reads configuration from a `.env` file. The repo ignores it (see `.gitignore`), so you should create your own locally.
 
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-### 2️⃣ Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3️⃣ Configure environment variables
-
-This project loads configuration from `.env`.
-
-**Important:** do not commit real secrets (database passwords, JWT secret keys). Your repo currently contains a `.env`; consider rotating those credentials and adding `.env` to `.gitignore` if it isn’t already.
-
-Create/adjust `.env` with values like:
+Minimum required:
 
 ```dotenv
-# Postgres
-USER_DB=postgres
-PASSWORD=YOUR_PASSWORD
-HOST_DB=localhost
-DB_NAME=expense_db
-DB_PORT=5432
+# Database (used by app/database.py and Alembic)
+DATABASE_URL=postgresql://postgres:password@localhost:5432/expense_db
 
-# JWT
+# JWT (used by app/oauth.py)
 SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1000
 ```
 
-Notes:
-- `ALGORITHM` is typically `HS256`.
-- `ACCESS_TOKEN_EXPIRE_MINUTES` must be a number.
+Optional (only needed for LLM routes):
 
----
+```dotenv
+LLM_MODEL=llama3.1
+```
 
-## 🗄️ Database
+### Docker Compose `.env` example
 
-The API expects a PostgreSQL database with `users` and `expenses` tables.
+If you run with Docker Compose, the Postgres service also reads `.env`. A typical file looks like:
 
-If you don’t already have tables created, here is a minimal schema that matches the current code:
+```dotenv
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_DB=expense_db
 
-```sql
-CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  hashed_password TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+DATABASE_URL=postgresql://postgres:password@postgres:5432/expense_db
 
-CREATE TABLE IF NOT EXISTS expenses (
-  id SERIAL PRIMARY KEY,
-  amount DOUBLE PRECISION NOT NULL,
-  category TEXT NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1000
+
+# Optional
+LLM_MODEL=llama3.1
 ```
 
 ---
 
-## ▶️ Run the API
+## 🗄️ Database & Migrations
 
-From the repository root:
+The app uses two main tables:
+
+- `users`
+- `expenses` (with `owner_id` → `users.id`)
+
+In Docker Compose, migrations are applied automatically on container start via `alembic upgrade head`.
+
+If you’re running locally (non-docker), run:
 
 ```bash
-fastapi dev ./app/main.py --port 5000
+alembic upgrade head
 ```
 
-Alternative (uvicorn):
+---
+
+## ▶️ Run Locally (without Docker)
 
 ```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 uvicorn app.main:app --reload --port 5000
 ```
 
-Once running:
+Then open:
 
-- ❤️ Health check: `GET /`
-- 📖 Swagger UI: `GET /docs`
-- 📘 ReDoc: `GET /redoc`
-
-> **💡 Tip:** You can also test the live API at [https://expense-tracker-r3tn.onrender.com/docs](https://expense-tracker-r3tn.onrender.com/docs)
+- `GET /` (health)
+- `GET /docs` (Swagger UI)
 
 ---
 
 ## 🐳 Run with Docker
 
-### Option A: Run the published DockerHub image
-
-The backend image is published/updated on DockerHub as:
-
-- `eazdanrafin/expense_tracker:latest`
-- DockerHub: https://hub.docker.com/repository/docker/eazdanrafin/expense_tracker/
-
-Run it (expects a `.env` file in the current directory):
-
-```bash
-docker run -p 8000:8000 --env-file .env eazdanrafin/expense_tracker:latest
-```
-
-Note: this runs **only the API container**. Your `.env` must point to a reachable Postgres instance (e.g., a managed DB, or a local DB).
-
-### Option B: Run API + Postgres with Docker Compose
-
-This repo includes `docker-compose.yml` to start both the API and a Postgres container:
+### Option A: API + Postgres (recommended)
 
 ```bash
 docker compose up --build
 ```
 
-If you use compose, set `HOST_DB=postgres` in `.env` (so the API container can reach the Postgres service).
+API will be available at `http://localhost:8000`.
+
+To wipe the database volume:
+
+```bash
+docker compose down -v
+```
+
+### Option B: Run the published DockerHub image
+
+- Image: `eazdanrafin/expense_tracker:latest`
+
+```bash
+docker run -p 8000:8000 --env-file .env eazdanrafin/expense_tracker:latest
+```
+
+Note: this runs only the API container — you still need a reachable Postgres instance referenced by `DATABASE_URL`.
+
+---
+
+## 🔑 API Quickstart
+
+### 1) Create a user
+
+`POST /users`
+
+```bash
+curl -X POST http://localhost:8000/users \
+  -H "Content-Type: application/json" \
+  -d '{"email":"me@example.com","password":"secret"}'
+```
+
+### 2) Login
+
+`POST /login` (OAuth2 password flow; uses form fields `username` + `password`)
+
+```bash
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=me@example.com&password=secret"
+```
+
+Use the returned token as:
+
+`Authorization: Bearer <token>`
+
+### 3) Expenses (protected)
+
+- `GET /expenses`
+- `POST /expenses`
+- `GET /expenses/{id}`
+- `PUT /expenses/{id}`
+- `DELETE /expenses/{id}`
+
+Example create:
+
+```bash
+curl -X POST http://localhost:8000/expenses \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":12.5,"category":"Food & Dining","description":"Lunch"}'
+```
+
+---
+
+## 🤖 LLM Endpoints (optional)
+
+These routes require:
+
+- An Ollama server running locally/where the API can reach it
+- `LLM_MODEL` set to a model that exists in your Ollama instance
+
+Routes (protected):
+
+- `GET /llm/analysis/story` — returns a short narrative analysis of the user’s expenses
+- `POST /llm/sql-gen` — takes `{ "query": "..." }` and inserts a generated expense
+
+Example:
+
+```bash
+curl -X POST http://localhost:8000/llm/sql-gen \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"Spent 18.99 on groceries at Target"}'
+```
+
+---
+
+## ✅ Notes
+
+- The live API is available at https://expense-tracker-r3tn.onrender.com/docs
+- CORS origins are configured in [app/main.py](app/main.py)
 
 ---
 
