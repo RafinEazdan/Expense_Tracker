@@ -34,12 +34,12 @@ async def analysis(db: Connection = Depends(get_db), current_user: dict = Depend
 
 
 @router.post("/llm/sql-gen",status_code=status.HTTP_200_OK, response_model=ExpenseResponse)
-async def sql_gen(query: LLMxSQL ,db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+async def sql_gen(payload: LLMxSQL ,db: Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
     
         try:
-            # amount, category, description = await sql_query_gen(query)
-            response = await sql_query_gen(query)
-            return response
+            amount, category, description = await sql_query_gen(payload.query)
+            # response = await sql_query_gen(query)
+            # return response
 
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="LLM is not accessible right now. Try manual input instead!")

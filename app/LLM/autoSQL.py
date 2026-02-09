@@ -17,48 +17,56 @@ table_name = "expenses"
 async def sql_query_gen(query):
     try:
         prompt = f"""
-                You are a data extraction engine.
+                You are a strict data extraction engine.
 
-Your task is to extract values from a natural-language expense description.
+You MUST follow the rules exactly.
 
-Schema
-	•	amount: number
-	•	category: string
-	•	description: string (optional)
+TASK:
+Extract values from the user input.
 
-Rules
-	•	Output ONLY the values in this exact order:
-	1.	amount
-	2.	category
-	3.	description
-	•	Separate values using a comma.
-	•	Do NOT include field names, keywords, explanations, labels, quotes, or formatting.
-	•	If the description is missing, output NULL.
-	•	Do NOT add any extra text before or after the values.
+SCHEMA:
+amount (number)
+category (string)
+description (string)
 
-User input
+DESCRIPTION RULE (IMPORTANT):
+- If the user does NOT explicitly mention a description,
+  you MUST generate a short, reasonable description
+  based on the category and context.
+- The description must be 2–5 words.
+- Do NOT invent unnecessary details.
 
+OUTPUT RULES (CRITICAL):
+- Output EXACTLY one single line
+- Output ONLY raw values
+- Order must be: amount, category, description
+- Separate values using commas
+- NO explanations
+- NO labels
+- NO quotes
+- NO newlines
+- NO extra spaces
+
+USER INPUT:
 {query}
 
-Output format(just give me the values, no extra keywords):
-amount, category, description
+VALID OUTPUT EXAMPLES:
+56,food,meal expense
+120,transport,uber ride
+30,coffee,morning coffee
+
+NOW OUTPUT:
 
 """
-        response = await model.invoke(prompt)
+        response_all = model.invoke(prompt)
+        response = response_all.content
         print(response)
         # Split safely into at most 3 parts
-        # parts = [p.strip() for p in response.split(",", maxsplit=2)]
+        parts = [p.strip() for p in response.split(",")]
 
-        # if len(parts) != 3:
-        #     raise ValueError("Parsed output is not in expected 3-part format")
-
-        # amount, category, description = parts
-
-        # # If description is missing use None
-        # if description.lower() in ("null", ""):
-        #     description = None
-
-        return response
+        amount, category, description = parts
+        # print(f"Amount is: {amount}, Category:{category}, Desc: {description}")
+        return amount, category, description
     
     except Exception as e:
         print("LLM Failed")

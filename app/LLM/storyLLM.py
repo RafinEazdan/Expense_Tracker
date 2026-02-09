@@ -40,7 +40,7 @@ You tell a very short story based on the expenses done by the user. The story wi
 Expense data:
 {expenses_json}
     """
-        response = await model.invoke(prompt)
+        response = model.invoke(prompt)
 
         return response.content
     
