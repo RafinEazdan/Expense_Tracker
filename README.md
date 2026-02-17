@@ -155,6 +155,15 @@ Then open:
 
 ## 🐳 Run with Docker
 
+### Option 0: Quickstart with Docker Compose
+
+```bash
+git clone https://github.com/RafinEazdan/Expense_Tracker.git
+cd Expense_Tracker
+cp .env.example .env
+docker compose up -d
+```
+
 ### Option A: API + Postgres (recommended)
 
 ```bash
@@ -171,7 +180,19 @@ docker compose down -v
 
 ### Option B: Run the published DockerHub image
 
-- Image: `eazdanrafin/expense_tracker:latest`
+Docker Hub repository:
+
+- https://hub.docker.com/repository/docker/eazdanrafin/expense_tracker
+
+Image:
+
+- `eazdanrafin/expense_tracker:latest`
+
+Install (pull) the latest image:
+
+```bash
+docker pull eazdanrafin/expense_tracker:latest
+```
 
 ```bash
 docker run -p 8000:8000 --env-file .env eazdanrafin/expense_tracker:latest
