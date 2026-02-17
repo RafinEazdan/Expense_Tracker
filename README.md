@@ -17,7 +17,7 @@ Auth • Per-user expense CRUD • Optional LLM-assisted insights and entry
 ## 🚀 Live Deployment
 
 - **Frontend (Vercel):** https://expense-tracker-self-mu-50.vercel.app/
-- **Backend API (Render):** https://expense-tracker-r3tn.onrender.com
+- **Backend API (Render):** https://expense-tracker-r3tn.onrender.com [No Longer Free on Render as of 2024-09-01; may be taken down in the future]
 - **API Docs:** https://expense-tracker-r3tn.onrender.com/docs
 
 ### 📦 Repositories
