@@ -6,7 +6,8 @@ from fastapi import HTTPException, status
 
 load_dotenv()
 
-model = ChatOllama(model=os.getenv("LLM_MODEL"))
+model = ChatOllama(model=os.getenv("LLM_MODEL"), 
+                   base_url="http://ollama:11434")
 
 def format_reports(expenses):
     reports = []

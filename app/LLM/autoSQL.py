@@ -8,7 +8,8 @@ from fastapi import HTTPException, status
 from app.schemas import ExpenseReport
 
 load_dotenv()
-model = ChatOllama(model=os.getenv("LLM_MODEL"))
+model = ChatOllama(model=os.getenv("LLM_MODEL"), 
+                   base_url="http://ollama:11434")
 
 expense_report = ExpenseReport.model_json_schema()
 # expense_response = ExpenseResponse.model_json_schema()

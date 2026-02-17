@@ -4,6 +4,7 @@ services:
     build: .
     depends_on:
       - postgres
+      - ollama
     ports:
       - 8000:8000
 
@@ -32,8 +33,26 @@ services:
 
     volumes:
       - postgres-db:/var/lib/postgresql/data
+  
+  ollama:
+    image: ollama/ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama-data:/root/.ollama
+    env_file:
+      - .env
+    command: >
+      "
+      sh -c 
+      ollama serve &
+      sleep 5 &&
+      ollama pull ${LLM_MODEL} &&
+      wait
+      "
 
 volumes:
   postgres-db:
+  ollama-data:
 
       
