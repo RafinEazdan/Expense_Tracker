@@ -29,7 +29,8 @@ Auth • Per-user expense CRUD • Optional LLM-assisted insights and entry
 
 ## ✨ Features
 
-- 🔐 User registration + JWT login (OAuth2 password flow)
+- 🔐 User registration with **OTP-based MFA** via Redis + JWT login (OAuth2 password flow)
+- 📩 Two-step registration: submit credentials → verify email with a 6-digit OTP
 - 🧾 Expense CRUD (scoped to the logged-in user)
 - 📚 Interactive API docs via Swagger UI
 - 🤖 Optional LLM endpoints:
@@ -42,6 +43,7 @@ Auth • Per-user expense CRUD • Optional LLM-assisted insights and entry
 
 - **FastAPI** / **Starlette**
 - **PostgreSQL** via **psycopg**
+- **Redis** (async, via **redis-py**) — used for OTP-based registration MFA
 - **SQLAlchemy + Alembic** for models/migrations
 - **JWT** via **PyJWT**
 - **Argon2** via **passlib[argon2]**
@@ -65,6 +67,9 @@ Auth • Per-user expense CRUD • Optional LLM-assisted insights and entry
     ├── oauth.py
     ├── schemas.py
     ├── utils.py
+    ├── redis/
+    │   ├── redis_client.py   # Async Redis wrapper (get/set/delete)
+    │   └── depends.py        # FastAPI dependency for Redis
     ├── LLM/
     │   ├── autoSQL.py
     │   └── storyLLM.py
@@ -86,6 +91,9 @@ Minimum required:
 ```dotenv
 # Database (used by app/database.py and Alembic)
 DATABASE_URL=postgresql://postgres:password@localhost:5432/expense_db
+
+# Redis (used for OTP-based registration MFA)
+REDIS_URL=redis://localhost:6379
 
 # JWT (used by app/oauth.py)
 SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
@@ -109,6 +117,7 @@ POSTGRES_PASSWORD=password
 POSTGRES_DB=expense_db
 
 DATABASE_URL=postgresql://postgres:password@postgres:5432/expense_db
+REDIS_URL=redis://redis:6379
 
 SECRET_KEY=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
 ALGORITHM=HS256
@@ -204,9 +213,11 @@ Note: this runs only the API container — you still need a reachable Postgres i
 
 ## 🔑 API Quickstart
 
-### 1) Create a user
+### 1) Register — request OTP
 
 `POST /users`
+
+Submit your email and password. The server hashes the password, generates a 6-digit OTP, and stores the pending registration in Redis (TTL 10 minutes). The OTP is returned/sent for verification.
 
 ```bash
 curl -X POST http://localhost:8000/users \
@@ -214,7 +225,35 @@ curl -X POST http://localhost:8000/users \
   -d '{"email":"me@example.com","password":"secret"}'
 ```
 
-### 2) Login
+Response:
+
+```json
+{ "message": "OTP sent to email. Please verify to complete registration." }
+```
+
+### 2) Verify OTP — complete registration
+
+`POST /users/verify-otp`
+
+Submit the OTP you received to finalize account creation.
+
+```bash
+curl -X POST http://localhost:8000/users/verify-otp \
+  -H "Content-Type: application/json" \
+  -d '{"email":"me@example.com","otp":"123456"}'
+```
+
+Response (on success):
+
+```json
+{
+  "id": 1,
+  "email": "me@example.com",
+  "created_at": "2026-03-02T12:00:00"
+}
+```
+
+### 3) Login
 
 `POST /login` (OAuth2 password flow; uses form fields `username` + `password`)
 
@@ -228,7 +267,7 @@ Use the returned token as:
 
 `Authorization: Bearer <token>`
 
-### 3) Expenses (protected)
+### 4) Expenses (protected)
 
 - `GET /expenses`
 - `POST /expenses`
@@ -279,9 +318,10 @@ curl -X POST http://localhost:8000/llm/sql-gen \
 
 ## 🔐 Authentication Flow
 
-1) **Register** a user
-2) **Login** to get a JWT token
-3) Call protected endpoints with:
+1) **Register** — `POST /users` with email & password → receives a 6-digit OTP (stored in Redis, expires in 10 min)
+2) **Verify OTP** — `POST /users/verify-otp` with email & OTP → account is created in Postgres
+3) **Login** — `POST /login` to get a JWT token
+4) Call protected endpoints with:
 
 ```http
 Authorization: Bearer <token>
@@ -297,8 +337,10 @@ Authorization: Bearer <token>
 
 ### 👥 Users
 
-- `GET /users` — list users
-- `POST /users` — create user
+- `POST /users` — start registration (sends OTP, stores pending data in Redis)
+- `POST /users/verify-otp` — verify OTP and create the user account
+- `GET /users/profile` — get current user's profile (protected)
+- `DELETE /users/profile/delete` — delete current user's account (protected)
 
 Request body (`POST /users`):
 
@@ -306,6 +348,15 @@ Request body (`POST /users`):
 {
   "email": "user@example.com",
   "password": "your-password"
+}
+```
+
+Request body (`POST /users/verify-otp`):
+
+```json
+{
+  "email": "user@example.com",
+  "otp": "123456"
 }
 ```
 
