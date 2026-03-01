@@ -14,6 +14,10 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class verifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
 class ExpenseReport(BaseModel):
     amount: float
     category: str
