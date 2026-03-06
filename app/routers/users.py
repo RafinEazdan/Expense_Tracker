@@ -11,11 +11,29 @@ import app.schemas as schemas
 from typing import List
 from app.redis.depends import get_redis
 
+
+import os
+from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+load_dotenv()
+
+
+
+
 router = APIRouter(
     prefix='/users',
     tags=['Users']
 )
 
+
+smtp_port=os.getenv("smtp_port")
+smtp_server=os.getenv("smtp_server")
+smtp_login=os.getenv("smtp_login")
+smtp_password=os.getenv("smtp_password")
+
+sender_email = "expense_tracker@signup.com"
 
 # -------------------USERS---------------------
 # get all users for admin use
@@ -48,6 +66,33 @@ async def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db),
         "hashed_password": hashed_pass,
         "otp": otp_code
     }
+     
+     receiver_email = user.email
+     message = MIMEMultipart("alternative")
+     message["Subject"] = "Test subject"
+     message["From"] = sender_email
+     message["To"] = receiver_email
+
+     html = f"""\
+            <html>
+            <body>
+            <p>Hi,<br><br>
+            Your verification code is: <b>{otp_code}</b><br><br>
+            This code will expire in 5 minutes.
+            </p>
+            </body>
+            </html>
+            """
+     part = MIMEText(html, "html")
+     message.attach(part)
+  
+     server = smtplib.SMTP(smtp_server, smtp_port)
+     server.set_debuglevel(1)
+     server.esmtp_features['auth'] = 'LOGIN DIGEST-MD5 PLAIN'
+     server.login(smtp_login, smtp_password)
+     server.sendmail(
+        sender_email, receiver_email, message.as_string()
+    )
      print(f"Generated OTP for {user.email}: {otp_code}")  # For debugging purposes, remove in production
      await redis.set(f"reg:{user.email}", json.dumps(registration_data), expire=600)
      return {"message": "OTP sent to email. Please verify to complete registration."}
