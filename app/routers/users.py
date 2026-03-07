@@ -93,6 +93,9 @@ async def post_users( user:schemas.UserCreate, db: Connection = Depends(get_db),
      server.sendmail(
         sender_email, receiver_email, message.as_string()
     )
+     
+
+     
      print(f"Generated OTP for {user.email}: {otp_code}")  # For debugging purposes, remove in production
      await redis.set(f"reg:{user.email}", json.dumps(registration_data), expire=600)
      return {"message": "OTP sent to email. Please verify to complete registration."}
